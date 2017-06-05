@@ -1,0 +1,23 @@
+---
+title: "Summer in Cape Town"
+author: Alex Carvalho
+date: '2017-06-05'
+slug: second-new-post-in-r-markdown
+categories: []
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+library(ggplot2)
+```
+
+#Hello!
+
+Cape Town, a place teaming with adventure, culture, and the avid pick-pockers on long street. This is a quick intro into my summer and some things I have been working on!
+
+#Logistics
+
+I will be living in the beautiful Camps Bay. Our housing is situated right on the beach and with an epic right handed beach break down the road called, Glen's Beach.
+
+![](http://www.2oceansvibe.com/wp-content/uploads/2008/10/glen-beach-aerial.jpg)
