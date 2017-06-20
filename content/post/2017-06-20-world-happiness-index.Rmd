@@ -1,0 +1,90 @@
+---
+title: World Happiness Index
+author: ~
+date: '2017-06-20'
+slug: world-happiness-index
+categories: []
+tags: []
+description: ''
+featured: ''
+featuredalt: ''
+featuredpath: ''
+linktitle: ''
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(ggplot2)
+library(dplyr)
+h2016 <- read_csv("~/Desktop/Data Science Notes/BlogTest/Blog3/content/post/2016.csv")
+```
+
+## How Happy is Your Country?
+![](https://spaceplace.nasa.gov/review/planets/planets-03.en.png)
+
+
+The World Happiness Report is a landmark survey of the state of global happiness.The World Happiness 2016, which ranks 155 countries by their happiness levels, was released at the United Nations at an event celebrating International Day of Happiness on March 20th. The goal of this data is to study what factors policy-makers can employ to increase the happiness of their country's population. Thanks to Kaggle, this data was provided in an easily accessible data set!
+
+#The Happiness Index Dataset
+```{r}
+h2016
+```
+
+## How about some Visualization?
+As human's there is only so much that we can interpret from staring at a dataset. Although our brains are wired to understand this data, our eyes are not. Therefore, let's begin our analysis with some graphs.
+
+```{r}
+ggplot(h2016,aes(x=Happiness_Score,y=Freedom,color=Region,size=Freedom))+geom_point(alpha=0.6)+labs(title="Happiness Score with Freedom Score 2016")
+```
+
+```{r}
+ggplot(h2016,aes(x=Happiness_Score,y=Economy_GDP_per_Capita,color=Region,size=Economy_GDP_per_Capita))+geom_point(alpha=0.6)+labs(title="Happiness Score with GDP Per Capita 2016")
+```
+
+Awesome! So by looking at just these two graphs we can see that data forms an upward slop and using logisitical regression could be a good way to estimate our model.
+
+#Logistical Regressions
+
+```{r}
+lm_h2016 = lm(Happiness_Score ~ Region + Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption + Generosity + Dystopia_Residual, data = h2016)
+summary(lm_h2016)
+```
+
+From this we can see that nearly every variable yields a strong enough significance to be a good fit for our model besides the region. Let's try and set up this model again after removing the Region.
+```{r}
+lm2_h2016 = lm(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption +Generosity + Dystopia_Residual, data = h2016)
+summary(lm2_h2016)
+```
+
+Awesome! Now each varible is yield a strong significane. However, just to be sure, let's plot each variable against Happiness_Score.
+
+```{r}
+plot(Happiness_Score ~ Family, data = h2016)
+plot(Happiness_Score ~ Health_Life_Expectancy, data = h2016)
+plot(Happiness_Score ~ Trust_Government_Corruption, data = h2016)
+plot(Happiness_Score ~ Generosity, data = h2016)
+plot(Happiness_Score ~ Dystopia_Residual , data = h2016)
+```
+
+#Now that we have our most significant variables, we can use the Train/Test method to make predictions!
+```{r}
+library(caret)
+lda = train(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption, data = h2016, method ="lm")
+summary(lda)
+```
+
+With an R-squared value of 0.7872, we have relatively good model to fit our data. Through our analyses we have been able to regressions to see which variables are the most significant in our data set.There are still very good models that would be effective in developing a better model, but due to time constaints this will have to suffice.
+
+#Looking at Happiness Through a World Map
+With the 'rworldmap' package, I was able to develop a sweet world map illustrating each country based on their Family rating.
+
+```{r}
+library(rworldmap)
+cp = RColorBrewer::brewer.pal(7, 'BuGn') #select a color palette
+d1 = data.frame(country = h2016$Country, value = h2016$Family)
+n = joinCountryData2Map(d1, joinCode = "NAME", nameJoinColumn = "country")
+mapCountryData(n, nameColumnToPlot = "value", mapTitle = "World Map for Family - 2016", colourPalette=cp, borderCol ='black')
+```
+
+
