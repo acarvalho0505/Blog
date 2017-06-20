@@ -6,10 +6,19 @@
     <description>Recent content in Posts on A Hugo website</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 05 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 20 Jun 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>World Happiness Index</title>
+      <link>/2017/06/20/world-happiness-index/</link>
+      <pubDate>Tue, 20 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017/06/20/world-happiness-index/</guid>
+      <description>How Happy is Your Country?  The World Happiness Report is a landmark survey of the state of global happiness.The World Happiness 2016, which ranks 155 countries by their happiness levels, was released at the United Nations at an event celebrating International Day of Happiness on March 20th. The goal of this data is to study what factors policy-makers can employ to increase the happiness of their country’s population. Thanks to Kaggle, this data was provided in an easily accessible data set!</description>
+    </item>
     
     <item>
       <title>Summer in Cape Town</title>
@@ -20,16 +29,6 @@
       <description>Hello! Cape Town, a place teaming with adventure, culture, and the avid pick-pockers on long street. This is a quick intro into my summer and some things I have been working on!
  Logistics I will be living in the beautiful Camps Bay. Our housing is situated right on the beach and with an epic right handed beach break down the road called, Glen’s Beach.
   </description>
-    </item>
-    
-    <item>
-      <title>A Plain Markdown Post</title>
-      <link>/2016/12/30/a-plain-markdown-post/</link>
-      <pubDate>Fri, 30 Dec 2016 21:49:57 -0700</pubDate>
-      
-      <guid>/2016/12/30/a-plain-markdown-post/</guid>
-      <description>This is a post written in plain Markdown (*.md) instead of R Markdown (*.Rmd). The major differences are:
- You cannot run any R code in a plain Markdown document, whereas in an R Markdown document, you can embed R code chunks (```{r}); A plain Markdown post is rendered through Blackfriday, and an R Markdown document is compiled by rmarkdown and Pandoc.  There are many differences in syntax between Blackfriday&amp;rsquo;s Markdown and Pandoc&amp;rsquo;s Markdown.</description>
     </item>
     
     <item>
