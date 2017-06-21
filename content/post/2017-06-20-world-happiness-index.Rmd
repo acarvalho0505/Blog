@@ -1,15 +1,10 @@
 ---
-title: World Happiness Index
+title: "World Happiness Index"
 author: Alex Carvalho
-date: 2017-06-20
+date: "2017-06-20"
 slug: world-happiness-index
 categories: []
 tags: []
-description: ''
-featured: ''
-featuredalt: ''
-featuredpath: ''
-linktitle: ''
 ---
 
 ```{r setup, include=FALSE}
