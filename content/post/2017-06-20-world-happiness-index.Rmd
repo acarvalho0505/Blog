@@ -1,6 +1,6 @@
 ---
 title: World Happiness Index
-author: ~
+author: Alex Carvalho
 date: '2017-06-20'
 slug: world-happiness-index
 categories: []
@@ -24,15 +24,16 @@ h2016 <- read_csv("~/Desktop/Data Science Notes/BlogTest/Blog3/content/post/2016
 ![](https://spaceplace.nasa.gov/review/planets/planets-03.en.png)
 
 
-The World Happiness Report is a landmark survey of the state of global happiness.The World Happiness 2016, which ranks 155 countries by their happiness levels, was released at the United Nations at an event celebrating International Day of Happiness on March 20th. The goal of this data is to study what factors policy-makers can employ to increase the happiness of their country's population. Thanks to Kaggle, this data was provided in an easily accessible data set!
+The World Happiness Report is a landmark survey of the state of global happiness.The World Happiness 2016, which ranks 155 countries by their happiness levels, was released at the United Nations at an event celebrating the International Day of Happiness on March 20th. The goal of this data is to study what factors policy-makers can employ to increase the happiness of their country's population. Thanks to Kaggle, this data was provided in an easily accessible csv file.
 
 #The Happiness Index Dataset
-```{r}
+```{r, echo=TRUE}
 h2016
 ```
 
-## How about some Visualization?
-As human's there is only so much that we can interpret from staring at a dataset. Although our brains are wired to understand this data, our eyes are not. Therefore, let's begin our analysis with some graphs.
+Here we can get a snap shot of what the data set looks like. We see that each row is seperated by the country ranking from most happy to the least happy, and the columns contain variables such as the Happiness_Rank,Economy GDP Per Capita, and Health Life Expectancy. Now there is only so much we can interpret from staring at a dataset, so let's being our analysis with some graphs.
+
+## Some Visualization
 
 ```{r}
 ggplot(h2016,aes(x=Happiness_Score,y=Freedom,color=Region,size=Freedom))+geom_point(alpha=0.6)+labs(title="Happiness Score with Freedom Score 2016")
@@ -42,7 +43,7 @@ ggplot(h2016,aes(x=Happiness_Score,y=Freedom,color=Region,size=Freedom))+geom_po
 ggplot(h2016,aes(x=Happiness_Score,y=Economy_GDP_per_Capita,color=Region,size=Economy_GDP_per_Capita))+geom_point(alpha=0.6)+labs(title="Happiness Score with GDP Per Capita 2016")
 ```
 
-Awesome! So by looking at just these two graphs we can see that data forms an upward slop and using logisitical regression could be a good way to estimate our model.
+Awesome! So by looking at just these two graphs we can see that data forms an upward slop. Both a country's Freedom Score and their Economy GDP per Capita appear to have a strong relationship with the overall Happiness Score of the country. Therefore, logisitical regression could be a good way to estimate our model.
 
 #Logistical Regressions
 
@@ -52,6 +53,7 @@ summary(lm_h2016)
 ```
 
 From this we can see that nearly every variable yields a strong enough significance to be a good fit for our model besides the region. Let's try and set up this model again after removing the Region.
+
 ```{r}
 lm2_h2016 = lm(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption +Generosity + Dystopia_Residual, data = h2016)
 summary(lm2_h2016)
@@ -59,7 +61,7 @@ summary(lm2_h2016)
 
 Awesome! Now each varible is yield a strong significane. However, just to be sure, let's plot each variable against Happiness_Score.
 
-```{r}
+```{r eval=FALSE}
 plot(Happiness_Score ~ Family, data = h2016)
 plot(Happiness_Score ~ Health_Life_Expectancy, data = h2016)
 plot(Happiness_Score ~ Trust_Government_Corruption, data = h2016)
@@ -67,17 +69,25 @@ plot(Happiness_Score ~ Generosity, data = h2016)
 plot(Happiness_Score ~ Dystopia_Residual , data = h2016)
 ```
 
-#Now that we have our most significant variables, we can use the Train/Test method to make predictions!
-```{r}
-library(caret)
-lda = train(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption, data = h2016, method ="lm")
-summary(lda)
+```{r, echo=FALSE}
+plot(Happiness_Score ~ Generosity, data = h2016)
 ```
 
-With an R-squared value of 0.7872, we have relatively good model to fit our data. Through our analyses we have been able to regressions to see which variables are the most significant in our data set.There are still very good models that would be effective in developing a better model, but due to time constaints this will have to suffice.
+The only plot that does not seem to be a good fit for logistical regression is Happiness Score compared to Generosity since it doesn't appear to be well distributed throughout the graph. Therefore, we'll remove it when developing our model. Time to use the Train/Test method to make predictions!
+
+#Train/Test
+
+```{r}
+library(caret)
+lda = train(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption + Dystopia_Residual, data = h2016, method ="lm")
+summary(lda)
+
+```
+
+With an R-squared value of 0.9896, we have relatively good model to fit our data. Through our analyses we have been able to regressions to see which variables are the most significant in our data set.There are still very good models that would be effective in developing a better model, but due to time constaints this will have to suffice.
 
 #Looking at Happiness Through a World Map
-With the 'rworldmap' package, I was able to develop a sweet world map illustrating each country based on their Family rating.
+As a final caveat, with the 'rworldmap' package, I was able to develop a sweet world map illustrating each country based on their Family rating.
 
 ```{r}
 library(rworldmap)
@@ -87,4 +97,4 @@ n = joinCountryData2Map(d1, joinCode = "NAME", nameJoinColumn = "country")
 mapCountryData(n, nameColumnToPlot = "value", mapTitle = "World Map for Family - 2016", colourPalette=cp, borderCol ='black')
 ```
 
-
+![](http://textimages.us/be-happy/be-happy01/be-happy-029.jpg)
