@@ -1,0 +1,197 @@
+---
+title: "World Happiness Index"
+author: Alex Carvalho
+date: "2017-06-20"
+slug: world-happiness-index
+categories: []
+tags: []
+---
+
+
+
+<div id="how-happy-is-your-country" class="section level2">
+<h2>How Happy is Your Country?</h2>
+<div class="figure">
+<img src="https://spaceplace.nasa.gov/review/planets/planets-03.en.png" />
+
+</div>
+<p>The World Happiness Report is a landmark survey of the state of global happiness.The World Happiness 2016, which ranks 155 countries by their happiness levels, was released at the United Nations at an event celebrating the International Day of Happiness on March 20th. The goal of this data is to study what factors policy-makers can employ to increase the happiness of their country’s population. Thanks to Kaggle, this data was provided in an easily accessible csv file.</p>
+</div>
+<div id="the-happiness-index-dataset" class="section level1">
+<h1>The Happiness Index Dataset</h1>
+<pre class="r"><code>h2016</code></pre>
+<pre><code>## # A tibble: 157 x 13
+##        Country                    Region Happiness_Rank Happiness_Score
+##          &lt;chr&gt;                     &lt;chr&gt;          &lt;int&gt;           &lt;dbl&gt;
+##  1     Denmark            Western Europe              1           7.526
+##  2 Switzerland            Western Europe              2           7.509
+##  3     Iceland            Western Europe              3           7.501
+##  4      Norway            Western Europe              4           7.498
+##  5     Finland            Western Europe              5           7.413
+##  6      Canada             North America              6           7.404
+##  7 Netherlands            Western Europe              7           7.339
+##  8 New Zealand Australia and New Zealand              8           7.334
+##  9   Australia Australia and New Zealand              9           7.313
+## 10      Sweden            Western Europe             10           7.291
+## # ... with 147 more rows, and 9 more variables:
+## #   Lower_Confidence_Interval &lt;dbl&gt;, Upper_Confidence_Interval &lt;dbl&gt;,
+## #   Economy_GDP_per_Capita &lt;dbl&gt;, Family &lt;dbl&gt;,
+## #   Health_Life_Expectancy &lt;dbl&gt;, Freedom &lt;dbl&gt;,
+## #   Trust_Government_Corruption &lt;dbl&gt;, Generosity &lt;dbl&gt;,
+## #   Dystopia_Residual &lt;dbl&gt;</code></pre>
+<p>Here we can get a snap shot of what the data set looks like. We see that each row is seperated by the country ranking from most happy to the least happy, and the columns contain variables such as the Happiness_Rank,Economy GDP Per Capita, and Health Life Expectancy. Now there is only so much we can interpret from staring at a dataset, so let’s being our analysis with some graphs.</p>
+<div id="some-visualization" class="section level2">
+<h2>Some Visualization</h2>
+<pre class="r"><code>ggplot(h2016,aes(x=Happiness_Score,y=Freedom,color=Region,size=Freedom))+geom_point(alpha=0.6)+labs(title=&quot;Happiness Score with Freedom Score 2016&quot;)</code></pre>
+<p><img src="/post/2017-06-20-world-happiness-index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(h2016,aes(x=Happiness_Score,y=Economy_GDP_per_Capita,color=Region,size=Economy_GDP_per_Capita))+geom_point(alpha=0.6)+labs(title=&quot;Happiness Score with GDP Per Capita 2016&quot;)</code></pre>
+<p><img src="/post/2017-06-20-world-happiness-index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Awesome! So by looking at just these two graphs we can see that data forms an upward slop. Both a country’s Freedom Score and their Economy GDP per Capita appear to have a strong relationship with the overall Happiness Score of the country. Therefore, logisitical regression could be a good way to estimate our model.</p>
+</div>
+</div>
+<div id="logistical-regressions" class="section level1">
+<h1>Logistical Regressions</h1>
+<pre class="r"><code>lm_h2016 = lm(Happiness_Score ~ Region + Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption + Generosity + Dystopia_Residual, data = h2016)
+summary(lm_h2016)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Happiness_Score ~ Region + Economy_GDP_per_Capita + 
+##     Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption + 
+##     Generosity + Dystopia_Residual, data = h2016)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -5.597e-04 -2.473e-04 -1.720e-06  2.547e-04  5.310e-04 
+## 
+## Coefficients:
+##                                         Estimate Std. Error   t value
+## (Intercept)                            2.956e-04  3.629e-04     0.815
+## RegionCentral and Eastern Europe      -3.205e-05  2.473e-04    -0.130
+## RegionEastern Asia                    -1.621e-04  2.656e-04    -0.610
+## RegionLatin America and Caribbean      5.555e-05  2.460e-04     0.226
+## RegionMiddle East and Northern Africa -8.542e-05  2.492e-04    -0.343
+## RegionNorth America                    1.717e-04  3.088e-04     0.556
+## RegionSoutheastern Asia                3.992e-07  2.567e-04     0.002
+## RegionSouthern Asia                   -1.477e-04  2.749e-04    -0.537
+## RegionSub-Saharan Africa              -2.443e-05  2.744e-04    -0.089
+## RegionWestern Europe                   7.059e-06  2.319e-04     0.030
+## Economy_GDP_per_Capita                 1.000e+00  1.316e-04  7600.355
+## Family                                 9.999e-01  1.434e-04  6974.541
+## Health_Life_Expectancy                 9.999e-01  2.679e-04  3732.892
+## Freedom                                1.000e+00  2.383e-04  4196.517
+## Trust_Government_Corruption            9.997e-01  2.861e-04  3493.803
+## Generosity                             1.000e+00  2.441e-04  4097.264
+## Dystopia_Residual                      9.999e-01  5.217e-05 19164.979
+##                                       Pr(&gt;|t|)    
+## (Intercept)                              0.417    
+## RegionCentral and Eastern Europe         0.897    
+## RegionEastern Asia                       0.543    
+## RegionLatin America and Caribbean        0.822    
+## RegionMiddle East and Northern Africa    0.732    
+## RegionNorth America                      0.579    
+## RegionSoutheastern Asia                  0.999    
+## RegionSouthern Asia                      0.592    
+## RegionSub-Saharan Africa                 0.929    
+## RegionWestern Europe                     0.976    
+## Economy_GDP_per_Capita                  &lt;2e-16 ***
+## Family                                  &lt;2e-16 ***
+## Health_Life_Expectancy                  &lt;2e-16 ***
+## Freedom                                 &lt;2e-16 ***
+## Trust_Government_Corruption             &lt;2e-16 ***
+## Generosity                              &lt;2e-16 ***
+## Dystopia_Residual                       &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.0003057 on 140 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 1.36e+08 on 16 and 140 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>From this we can see that nearly every variable yields a strong enough significance to be a good fit for our model besides the region. Let’s try and set up this model again after removing the Region.</p>
+<pre class="r"><code>lm2_h2016 = lm(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption +Generosity + Dystopia_Residual, data = h2016)
+summary(lm2_h2016)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Happiness_Score ~ Economy_GDP_per_Capita + Family + 
+##     Health_Life_Expectancy + Freedom + Trust_Government_Corruption + 
+##     Generosity + Dystopia_Residual, data = h2016)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -6.316e-04 -2.479e-04  4.180e-06  2.631e-04  5.002e-04 
+## 
+## Coefficients:
+##                              Estimate Std. Error   t value Pr(&gt;|t|)    
+## (Intercept)                 1.357e-04  1.340e-04     1.013    0.313    
+## Economy_GDP_per_Capita      1.000e+00  1.224e-04  8167.150   &lt;2e-16 ***
+## Family                      1.000e+00  1.293e-04  7734.993   &lt;2e-16 ***
+## Health_Life_Expectancy      9.999e-01  1.967e-04  5082.910   &lt;2e-16 ***
+## Freedom                     1.000e+00  2.189e-04  4569.855   &lt;2e-16 ***
+## Trust_Government_Corruption 9.997e-01  2.607e-04  3834.802   &lt;2e-16 ***
+## Generosity                  1.000e+00  2.067e-04  4838.614   &lt;2e-16 ***
+## Dystopia_Residual           9.999e-01  4.579e-05 21836.970   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.000301 on 149 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 3.206e+08 on 7 and 149 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Awesome! Now each varible is yield a strong significane. However, just to be sure, let’s plot each variable against Happiness_Score.</p>
+<pre class="r"><code>plot(Happiness_Score ~ Family, data = h2016)
+plot(Happiness_Score ~ Health_Life_Expectancy, data = h2016)
+plot(Happiness_Score ~ Trust_Government_Corruption, data = h2016)
+plot(Happiness_Score ~ Generosity, data = h2016)
+plot(Happiness_Score ~ Dystopia_Residual , data = h2016)</code></pre>
+<p><img src="/post/2017-06-20-world-happiness-index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>The only plot that does not seem to be a good fit for logistical regression is Happiness Score compared to Generosity since it doesn’t appear to be well distributed throughout the graph. Therefore, we’ll remove it when developing our model. Time to use the Train/Test method to make predictions!</p>
+</div>
+<div id="traintest" class="section level1">
+<h1>Train/Test</h1>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre class="r"><code>lda = train(Happiness_Score ~ Economy_GDP_per_Capita + Family + Health_Life_Expectancy + Freedom + Trust_Government_Corruption + Dystopia_Residual, data = h2016, method =&quot;lm&quot;)
+summary(lda)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = .outcome ~ ., data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.25231 -0.08083 -0.01964  0.05702  0.44513 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                  0.22113    0.04975   4.445  1.7e-05 ***
+## Economy_GDP_per_Capita       0.84144    0.04661  18.053  &lt; 2e-16 ***
+## Family                       1.03751    0.05099  20.349  &lt; 2e-16 ***
+## Health_Life_Expectancy       1.17482    0.07639  15.379  &lt; 2e-16 ***
+## Freedom                      1.29305    0.08309  15.561  &lt; 2e-16 ***
+## Trust_Government_Corruption  1.23890    0.10112  12.251  &lt; 2e-16 ***
+## Dystopia_Residual            0.95868    0.01777  53.936  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1189 on 150 degrees of freedom
+## Multiple R-squared:  0.9896, Adjusted R-squared:  0.9892 
+## F-statistic:  2371 on 6 and 150 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>With an R-squared value of 0.9896, we have relatively good model to fit our data. Through our analyses we have been able to regressions to see which variables are the most significant in our data set.There are still very good models that would be effective in developing a better model, but due to time constaints this will have to suffice.</p>
+</div>
+<div id="looking-at-happiness-through-a-world-map" class="section level1">
+<h1>Looking at Happiness Through a World Map</h1>
+<p>As a final caveat, with the ‘rworldmap’ package, I was able to develop a sweet world map illustrating each country based on their Family rating.</p>
+<pre class="r"><code>library(rworldmap)</code></pre>
+<pre><code>## Loading required package: sp</code></pre>
+<pre><code>## ### Welcome to rworldmap ###</code></pre>
+<pre><code>## For a short introduction type :   vignette(&#39;rworldmap&#39;)</code></pre>
+<pre class="r"><code>cp = RColorBrewer::brewer.pal(7, &#39;BuGn&#39;) #select a color palette
+d1 = data.frame(country = h2016$Country, value = h2016$Family)
+n = joinCountryData2Map(d1, joinCode = &quot;NAME&quot;, nameJoinColumn = &quot;country&quot;)</code></pre>
+<pre><code>## 154 codes from your data successfully matched countries in the map
+## 3 codes from your data failed to match with a country code in the map
+## 89 codes from the map weren&#39;t represented in your data</code></pre>
+<pre class="r"><code>mapCountryData(n, nameColumnToPlot = &quot;value&quot;, mapTitle = &quot;World Map for Family - 2016&quot;, colourPalette=cp, borderCol =&#39;black&#39;)</code></pre>
+<p><img src="/post/2017-06-20-world-happiness-index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div class="figure">
+<img src="http://textimages.us/be-happy/be-happy01/be-happy-029.jpg" />
+
+</div>
+</div>
